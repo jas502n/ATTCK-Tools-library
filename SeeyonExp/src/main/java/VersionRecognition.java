@@ -23,7 +23,7 @@ public class VersionRecognition {
         String poc = vulObject.get("pocContent").toString();
         String res = vulObject.get("Response").toString();
         List<Object> versionsList = versions.toList();
-        List<String> versionList1 = new ArrayList<>();
+        List<String> versionList1 = new ArrayList<String>();
         for (Object version:versionsList) {
             versionList1.add((String)version);
         }
