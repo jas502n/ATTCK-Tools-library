@@ -2,6 +2,60 @@
 
 ### 0x00 开发日志
 
+2021-11-14 Base65 python加密解密算法
+
+```python
+
+import base64 
+
+# 字符串加密
+# 先进行base64加密，遍历字符串，按照ASCII表向右偏移一位，然后进行16进制加密
+def B65encode(plainText):
+    plainTextB64 = base64.b64encode(plainText)
+    s = ''
+    for i in plainTextB64:
+        j = ord(i) # str > int
+        s += chr(j + 1).encode('hex') # str > hex
+    return s
+
+B65str = B65encode("ctpDataSource.minCount=50")
+print(B65str)
+
+# 字符串解密
+# 先进行16进制解密，然后ASCII表中字母对应的数值进行减一即可（向左偏移一位），最后进行base64解码
+def B65decode(encodeText):    
+    eText = encodeText.decode('hex')
+    s = ''
+    for i in eText:
+        j = ord(i) - 1
+        s += chr(j)
+    return base64.b64decode(s)
+
+encodeText = "5a345378534847315a574f7765594b6b5b5436756258364563345776654531324e423e3e"
+B65str = B65decode(encodeText)
+print(B65str)
+```
+
+例如：
+
+`E:\SeeyonA6V8\A6\ApacheJetspeed\webapps\seeyon\2159169472de48d8840f0b5aed2bb484.txt`
+
+```
+>>> B65str = B65decode("5a345378534847315a574f7765594b6b5b5436756258364563345776654531324e42717566594f796344366a5a584f7365594276644847316245314c5b484a7662486d6a5b594b765a59536d53486d696348576b65453277646e647662486d6a5b594b765a59536d4d6e53715a58796d5a3452765632474e5633577a656e577a53486d696348576b6542716b654943465a59536956333a32646e4f6d4d6f577b5b594b765a58326d51594f69446f6577646e756e63483a344d6e53715a58796d5a34523a5632474e5633577a656e577a446e4f3164465369654847556334577a5a3356765b494b71656e577a5233796964344f505a58326d51584f776354367562584f7a63344f775b6f5276643447746433577a656e577a4d6e716c5a6e4e765632474e5633577a656e577a53494b71656e577a446e4f3164465369654847556334314e7b4e38534847315a584b69643357505a58326d51594f6d5b596d77636b75755a596955654847315b58326d636f537b51554238563357745b584f315558573162483a6c51584f32646f4f776468717566594f79634436785a5953705152716b654943465a59536956333a32646e4f6d4d6e326966464f776558363151554a784e45423e")
+>>> print(B65str)
+ctpDataSource.minCount=50
+mysql.backup.path=
+db.hibernateDialect=org.hibernate.dialect.SQLServerDialect
+ctpDataSource.username=sa
+workflow.dialect=SQLServer
+ctpDataSource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+ctpDataSource.password=/1.0/YmVuam9BMjM0
+ctpDataSource.url=jdbc:sqlserver://192.168.1.101:1433;DatabaseName=seeyon;maxStatements=0;SelectMethod=cursor
+mysql.path=
+ctpDataSource.maxCount=2000
+>>>
+```
+
 2021-11-14 增加 maven打包时，程序入口方法；防止将用户id 打包进jar包造成信息泄露
 
 使用自定义方法修改 例如：`Built-By: Apache Maven`
