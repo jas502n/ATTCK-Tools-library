@@ -2,8 +2,71 @@
 
 ### 0x00 开发日志
 
-2021-11-14 增加 maven打包时，将用户id 打包进jar包，使用自定义方法修改 例如：Built-By: Apache Maven
+2021-11-14 增加 maven打包时，程序入口方法；防止将用户id 打包进jar包造成信息泄露
+
+使用自定义方法修改 例如：`Built-By: Apache Maven`
+
+```
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!--  程序入口-->
+                            <mainClass>ExpMain</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+                        </manifest>
+<!--                        Hiding manifest entries with maven：Built-By: <my username>-->
+<!--                        https://stackoverflow.com/questions/25098307/hiding-manifest-entries-with-maven-->
+                        <manifestEntries>
+                            <Built-By>Apache Maven</Built-By>
+                        </manifestEntries>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
 2021-11-14 fix 读取数据库回显未删除生成的txt代码错误
+
+`/src/main/java/DataConf.java`
+
+```
+httpClient.doDel(getUrl,expDel);
+change to
+httpClient.doDel(realUrl,expDel);
+```
+
+2021-11-14 修改source警告，默认1.5
+
+`/src/main/java/VersionRecognition.java`
+
+```
+List<String> versionList1 = new ArrayList<>();
+change to
+List<String> versionList1 = new ArrayList<String>();
+```
+
+
+
+
 2021-3-13 V0.9 增加多个受影响版本，修复HTTPS无法指定端口bug
 
 2021-2-2 V0.8 新增影响版本v6.1
