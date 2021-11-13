@@ -28,6 +28,6 @@ public class DataConf {
         Thread.sleep(2 * 1000);
         httpClient.getRes(getUrl);
         Thread.sleep(2 * 1000);
-        httpClient.doDel(getUrl,expDel);
+        httpClient.doDel(realUrl,expDel);
     }
 }
