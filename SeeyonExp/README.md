@@ -2,6 +2,88 @@
 
 ### 0x00 开发日志
 
+2021-11-21 修复sun.misc.BASE64coder Linux加密的换行问题，导致base65解密失败问题。
+
+```
+Y3RwRGF0YVNvdXJjZS5taW5Db3VudD01MFxubXlzcWwuYmFja3VwLnBhdGg9XG5kYi5oaWJlcm5h
+dGVEaWFsZWN0PW9yZy5oaWJlcm5hdGUuZGlhbGVjdC5TUUxTZXJ2ZXJEaWFsZWN0XG5jdHBEYXRh
+U291cmNlLnVzZXJuYW1lPXNhXG53b3JrZmxvdy5kaWFsZWN0PVNRTFNlcnZlclxuY3RwRGF0YVNv
+dXJjZS5kcml2ZXJDbGFzc05hbWU9Y29tLm1pY3Jvc29mdC5zcWxzZXJ2ZXIuamRiYy5TUUxTZXJ2
+ZXJEcml2ZXJcbmN0cERhdGFTb3VyY2UucGFzc3dvcmQ9LzEuMC9ZbVZ1YW05Qk1qTTBcbmN0cERh
+dGFTb3VyY2UudXJsPWpkYmM6c3Fsc2VydmVyOi8vMTAuMTAuMjYuMTUzOjE0MzM7RGF0YWJhc2VO
+YW1lPXNlZXlvbjttYXhTdGF0ZW1lbnRzPTA7U2VsZWN0TWV0aG9kPWN1cnNvclxubXlzcWwucGF0
+aD1cbmN0cERhdGFTb3VyY2UubWF4Q291bnQ9MjAwMFxu
+```
+
+```
+0:152
+153:305
+306:458
+459:611
+612:764
+765:917
+918:1070
+1071:1118
+```
+对应的base65为
+
+```
+5a345378534847315a574f7765594b6b5b543675625 b
+65485746625847745b584f3151583a7a5b7a3670622 b
+56333a32646e4f6d4d6f577b5b594b765a58326d515 b
+65594b6b5b54366c646e6d335b594b456348477b641 b
+5b594b46646e6d335b594b64636e4f3164465369654 b
+654847556334577a5a33567665594b745158716c5a6 b
+5a58326d51594f6d5b596d77636b75755a596955654 b
+62453264636e4f3164465369654847556334577a5a3356
+```
+注意：每行结尾的b代表换行，每行长度为153,超过则从第二行重新开始
+
+数据处理，先将每行的base65转换成字符串，然后拼接每行的结果集
+
+对应的修复代码为src/main/java/HTTPClient.java#RemoveN
+```
+public static String RemoveN(String string) throws IOException {
+        int j = (int) (string.length() / 152.0);
+        System.out.println(j); // 7
+        int b = 0;
+        String c = "";
+        String str2 = "";
+        for (int i = 1; i <= j + 1; i++) {
+            int lastN = 0;
+
+            if (i != j + 1) {
+                lastN = i * 153 - 1;
+                str2 = string.substring(b, lastN);
+                System.out.println(String.valueOf(b) + "   " + lastN);
+                System.out.println(str2);
+                b = lastN + 1;
+//                c += str2;
+                c = c + decode(str2);
+            } else {
+                String str3 = string.substring(j * 153, string.length());
+                System.out.println(String.valueOf(j * 153) + "   " + string.length());
+                System.out.println(str3);
+//                c += str3;
+                c = c + decode(str3);
+            }
+        }
+        return c;
+    }
+```
+
+解密为：
+Linux:
+```
+System.out.println(RemoveN("Base65"));
+```
+
+Windows
+```
+System.out.println(Decode("Base65"));
+```
+
+
 2021-11-14 Base65 python加密解密算法
 
 ```python
@@ -36,7 +118,7 @@ B65str = B65decode(encodeText)
 print(B65str)
 ```
 
-例如：
+例如：Windows -python 解密
 
 `E:\SeeyonA6V8\A6\ApacheJetspeed\webapps\seeyon\2159169472de48d8840f0b5aed2bb484.txt`
 
