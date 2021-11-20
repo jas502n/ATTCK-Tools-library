@@ -110,8 +110,36 @@ public class HTTPClient {
             }
         }
     }
+    
+    // fix linux decode
+    public static String RemoveN(String string) throws IOException {
+        int j = (int) (string.length() / 152.0);
+        System.out.println(j); // 7
+        int b = 0;
+        String c = "";
+        String str2 = "";
+        for (int i = 1; i <= j + 1; i++) {
+            int lastN = 0;
+
+            if (i != j + 1) {
+                lastN = i * 153 - 1;
+                str2 = string.substring(b, lastN);
+               // System.out.println(String.valueOf(b) + "   " + lastN);
+                System.out.println(str2);
+                b = lastN + 1;
+                c = c + decode(str2);
+            } else {
+                String str3 = string.substring(j * 153, string.length());
+               // System.out.println(String.valueOf(j * 153) + "   " + string.length());
+                System.out.println(str3);
+                c = c + decode(str3);
+            }
+        }
+        return c;
+    }
+    
     //BASE65解码模块
-    public String decode(String string) throws IOException {
+    public static String decode(String string) throws IOException {
         BASE64Decoder decoder = new BASE64Decoder();
         String deStr = "";
         for(int i=0;i<string.length();i=i+2){
